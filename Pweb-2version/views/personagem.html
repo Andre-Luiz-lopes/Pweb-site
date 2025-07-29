@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+
+  <meta charset="UTF-8">
+  <title>Adivinhe o Personagem</title>
+  <link rel="stylesheet" href="/stylesheets/style.css">
+  <style>
+    .personagem-img {
+      width: 180px;
+      border-radius: 10px;
+      margin-bottom: 18px;
+      box-shadow: 0 2px 12px #000a;
+    }
+    .btn { margin-bottom: 10px; }
+  </style>
+
+</head>
+<body>
+
+  <div class="container">
+    <h1>Adivinhe o Personagem</h1>
+    <div id="personagem-container"></div>
+    <a href="/" class="btn">Voltar</a>
+  </div>
+
+  <script>
+    let personagens, atual = 0, acertos = 0;
+    fetch('/api/personagens')
+      .then(res => res.json())
+      .then(data => {
+        personagens = data;
+        shuffle(personagens);
+        mostrarPersonagem();
+      });
+
+    function mostrarPersonagem() {
+      if (atual >= personagens.length) {
+        document.getElementById('personagem-container').innerHTML = `<h2>Você acertou ${acertos} de ${personagens.length}!</h2>`;
+        return;
+      }
+      const p = personagens[atual];
+      let html = `<img src="${p.imagem}" alt="Personagem" class="personagem-img"><br>`;
+      p.opcoes.forEach(op => {
+        html += `<button class="btn" onclick="responder('${op}')">${op}</button><br>`;
+      });
+      document.getElementById('personagem-container').innerHTML = html;
+    }
+
+    function responder(op) {
+      if (op === personagens[atual].nome) acertos++;
+      atual++;
+      mostrarPersonagem();
+    }
+
+    function shuffle(array) {
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+      return array;
+    }
+  </script>
+  
+</body>
+</html>

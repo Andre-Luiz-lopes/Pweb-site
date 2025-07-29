@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Ranking - Hajime no Ippo Quiz</title>
+  <link rel="stylesheet" href="/stylesheets/style.css">
+  <style>
+    body {
+      background: #181c24;
+      color: #fff;
+      font-family: 'Segoe UI', Arial, sans-serif;
+    }
+    .container {
+      max-width: 500px;
+      margin: 40px auto;
+      background: rgba(30,34,44,0.95);
+      border-radius: 12px;
+      box-shadow: 0 4px 24px #0008;
+      padding: 32px 24px 24px 24px;
+      text-align: center;
+    }
+    h1 {
+      margin-bottom: 24px;
+      letter-spacing: 2px;
+      font-size: 2.2em;
+      color: #ffe066;
+      text-shadow: 1px 2px 8px #000a;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 24px;
+      background: #23283a;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    th, td {
+      padding: 12px 8px;
+      border-bottom: 1px solid #333a;
+      font-size: 1.1em;
+    }
+    th {
+      background: #2d334a;
+      color: #ffe066;
+      font-weight: bold;
+      letter-spacing: 1px;
+    }
+    tr:nth-child(even) td {
+      background: #23283a;
+    }
+    tr:nth-child(odd) td {
+      background: #20243a;
+    }
+    .btn {
+      background: #ffe066;
+      color: #23283a;
+      border: none;
+      border-radius: 6px;
+      padding: 10px 24px;
+      font-size: 1em;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 10px;
+      text-decoration: none;
+      transition: background 0.2s;
+      display: inline-block;
+    }
+    .btn:hover {
+      background: #ffd43b;
+    }
+    .logo {
+      width: 120px;
+      margin-bottom: 18px;
+      filter: drop-shadow(0 2px 8px #000a);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <img src="/images/logo-hajime-no-ippo.png" alt="Logo Hajime no Ippo" class="logo">
+    <h1>Ranking dos Melhores</h1>
+    <table id="rank-table">
+      <tr>
+        <th>Posição</th>
+        <th>Nome</th>
+        <th>Pontos</th>
+      </tr>
+    </table>
+    <a href="/" class="btn">Voltar ao Início</a>
+  </div>
+  <script>
+    fetch('/api/ranking')
+      .then(res => res.json())
+      .then(rank => {
+        const table = document.getElementById('rank-table');
+        if (!rank.length) {
+          const row = document.createElement('tr');
+          row.innerHTML = `<td colspan="3">Nenhuma pontuação registrada ainda.</td>`;
+          table.appendChild(row);
+        } else {
+          rank.forEach((u, i) => {
+            const row = document.createElement('tr');
+            row.innerHTML = `<td>${i+1}</td><td>${u.nome}</td><td>${u.pontos}</td>`;
+            table.appendChild(row);
+          });
+        }
+      });
+  </script>
+</body>
+</html>

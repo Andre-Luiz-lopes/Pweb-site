@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Modo Hardcore</title>
+  <link rel="stylesheet" href="/stylesheets/style.css">
+</head>
+<body>
+  <div class="bg-overlay"></div>
+  <div class="container">
+    <img src="/images/logo-hajime-no-ippo.png" class="logo">
+    <h1>Modo Hardcore</h1>
+    <div id="hardcore-container"></div>
+    <button class="btn" onclick="window.location.href='/'">Voltar</button>
+  </div>
+  <script>
+    let perguntas, atual = 0, acertos = 0;
+    fetch('/api/perguntas')
+      .then(res => res.json())
+      .then(data => {
+        perguntas = data;
+        shuffle(perguntas);
+        mostrarPergunta();
+      });
+    function mostrarPergunta() {
+      if (atual >= perguntas.length) fim();
+      const p = perguntas[atual];
+      let html = `<h2>${p.question}</h2>`;
+      p.options.forEach(op => {
+        html += `<button class="btn" onclick="responder('${op}')">${op}</button><br>`;
+      });
+      document.getElementById('hardcore-container').innerHTML = html;
+    }
+    function responder(op) {
+      if (op === perguntas[atual].answer) {
+        acertos++;
+        atual++;
+        mostrarPergunta();
+      } else {
+        fim();
+      }
+    }
+    function fim() {
+      document.getElementById('hardcore-container').innerHTML = `<h2>Fim de jogo! Você acertou ${acertos}!</h2>`;
+      const nome = prompt("Digite seu nome para salvar no ranking:");
+      if (nome) {
+        fetch('/api/salvar-pontuacao', {
+          method: 'POST',
+          headers: {'Content-Type':'application/json'},
+          body: JSON.stringify({ nome, pontos: acertos })
+        });
+      }
+    }
+    function shuffle(a) {
+      for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+      }
+    }
+  </script>
+</body>
+</html>
